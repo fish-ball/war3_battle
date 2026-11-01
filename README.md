@@ -44,14 +44,26 @@ powershell -File build.ps1
 
 ### 1. 服务端（VPS）
 
-上传服务端二进制并启动（默认监听 51234）：
+推荐用 `deploy/` 下的脚本安装为 systemd 服务（开机自启、崩溃自动重启）。把服务端二进制和 `install.sh` 传到服务器同一目录：
 
 ```bash
-chmod +x w3bridge-server-linux-amd64
-./w3bridge-server-linux-amd64 -listen :51234
+chmod +x install.sh
+sudo ./install.sh
 ```
 
-放行防火墙的 TCP 51234 端口。可用 systemd 或 nohup 保持后台运行。
+不带参数时会自动查找脚本同目录或上级 `dist/` 目录下的 `w3bridge-server-linux-amd64`，也可以显式指定：`sudo ./install.sh /path/to/w3bridge-server-linux-amd64`。
+
+安装后常用命令：
+
+```bash
+systemctl status w3bridge        # 查看状态
+journalctl -u w3bridge -f        # 查看日志
+sudo ./uninstall.sh              # 卸载服务
+```
+
+默认监听 51234，改端口编辑 `/etc/default/w3bridge` 里的 `LISTEN` 后 `sudo systemctl restart w3bridge`。记得放行防火墙的对应 TCP 端口。
+
+不用脚本也可以直接前台运行：`./w3bridge-server-linux-amd64 -listen :51234`。
 
 ### 2. 客户端（每人一台电脑）
 
@@ -107,5 +119,6 @@ internal/w3gs/         W3GS 协议包构造与解析（含 GBK 转码）
 internal/protocol/     客户端与服务端的帧协议
 internal/server/       房间管理与 TCP 流中继
 internal/client/       局域网发现、游戏公告、TCP 代理
+deploy/                服务端 systemd 安装与卸载脚本
 dist/                  预编译产物
 ```
