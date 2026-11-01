@@ -43,6 +43,9 @@ const (
 	MaxSearchVersion uint32 = 33
 )
 
+// AllProducts 所有产品标识，用于全量探测（冰封王座与混乱之治）
+var AllProducts = [2][4]byte{ProductTFT, ProductROC}
+
 // GameInfo 解析后的 0x30 游戏信息
 type GameInfo struct {
 	Product          [4]byte // 产品标识（线上字节序）
@@ -65,7 +68,7 @@ func (g *GameInfo) DisplayedPlayers() uint32 {
 	return g.Players + g.Slots - g.NonComputerSlots
 }
 
-// ProductName 返回产品名称（W3XP/WAR3）
+// ProductName 返回产品名称
 func (g *GameInfo) ProductName() string {
 	return productName(g.Product)
 }
@@ -73,7 +76,14 @@ func (g *GameInfo) ProductName() string {
 func productName(p [4]byte) string {
 	// 线上为 ASCII 反序存储
 	out := [4]byte{p[3], p[2], p[1], p[0]}
-	return string(out[:])
+	switch string(out[:]) {
+	case "W3XP":
+		return "冰封王座"
+	case "WAR3":
+		return "混乱之治"
+	default:
+		return string(out[:])
+	}
 }
 
 // BuildSearchGame 构造 0x2F 局域网游戏查询包（16 字节）

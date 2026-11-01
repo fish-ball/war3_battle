@@ -20,7 +20,6 @@ import (
 
 	"war3_battle/internal/client"
 	_ "war3_battle/internal/console" // 控制台 UTF-8 初始化
-	"war3_battle/internal/w3gs"
 )
 
 func main() {
@@ -29,7 +28,6 @@ func main() {
 		room       = flag.String("room", "666", "房间名，三人约好一致即可")
 		password   = flag.String("pass", "", "房间密码，可留空")
 		name       = flag.String("name", "", "玩家名（显示在房间里）")
-		product    = flag.String("product", "tft", "游戏类型：tft（冰封王座）或 roc（混乱之治）")
 		gamePort   = flag.Uint("game-port", 6112, "魔兽局域网端口（游戏选项里的端口）")
 		proxyBase  = flag.Int("proxy-base", 26112, "本地代理端口起始值")
 	)
@@ -41,17 +39,6 @@ func main() {
 
 	if *serverAddr == "" || *name == "" {
 		flag.Usage()
-		os.Exit(2)
-	}
-
-	var prod [4]byte
-	switch *product {
-	case "tft":
-		prod = w3gs.ProductTFT
-	case "roc":
-		prod = w3gs.ProductROC
-	default:
-		fmt.Fprintln(os.Stderr, "product 只能是 tft 或 roc")
 		os.Exit(2)
 	}
 
@@ -69,7 +56,6 @@ func main() {
 		Room:       *room,
 		Password:   *password,
 		Name:       *name,
-		Product:    prod,
 		GamePort:   uint16(*gamePort),
 		ProxyBase:  *proxyBase,
 	})

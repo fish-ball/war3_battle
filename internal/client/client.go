@@ -23,13 +23,12 @@ const readTimeout = 90 * time.Second
 
 // Config 客户端配置
 type Config struct {
-	ServerAddr string  // 服务端地址，例如 1.2.3.4:51234
-	Room       string  // 房间名
-	Password   string  // 房间密码
-	Name       string  // 玩家名
-	Product    [4]byte // 产品标识（W3XP / WAR3）
-	GamePort   uint16  // 魔兽局域网端口（游戏选项中的端口，默认 6112）
-	ProxyBase  int     // 本地代理端口起始值
+	ServerAddr string // 服务端地址，例如 1.2.3.4:51234
+	Room       string // 房间名
+	Password   string // 房间密码
+	Name       string // 玩家名
+	GamePort   uint16 // 魔兽局域网端口（游戏选项中的端口，默认 6112）
+	ProxyBase  int    // 本地代理端口起始值
 }
 
 // Client 联机客户端

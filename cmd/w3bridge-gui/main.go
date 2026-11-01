@@ -13,7 +13,6 @@ import (
 	"github.com/lxn/walk"
 
 	"war3_battle/internal/client"
-	"war3_battle/internal/w3gs"
 )
 
 // 默认参数
@@ -24,20 +23,6 @@ const (
 	defaultProxyBase = "26112"
 )
 
-// stringModel 下拉框的静态字符串列表模型
-type stringModel struct {
-	walk.ListModelBase
-	items []string
-}
-
-func (m *stringModel) ItemCount() int {
-	return len(m.items)
-}
-
-func (m *stringModel) Value(index int) interface{} {
-	return m.items[index]
-}
-
 // app 主界面与运行控制
 type app struct {
 	mw *walk.MainWindow
@@ -46,7 +31,6 @@ type app struct {
 	editRoom      *walk.LineEdit
 	editPass      *walk.LineEdit
 	editName      *walk.LineEdit
-	comboProduct  *walk.ComboBox
 	editGamePort  *walk.LineEdit
 	editProxyBase *walk.LineEdit
 
@@ -178,17 +162,6 @@ func (a *app) buildFields(parent walk.Container, grid *walk.GridLayout) error {
 	// 玩家名默认取当前 Windows 用户名
 	a.editName.SetText(os.Getenv("USERNAME"))
 
-	if a.comboProduct, err = walk.NewComboBox(parent); err != nil {
-		return err
-	}
-	if err := a.comboProduct.SetModel(&stringModel{items: []string{
-		"冰封王座 (TFT)",
-		"混乱之治 (ROC)",
-	}}); err != nil {
-		return err
-	}
-	a.comboProduct.SetCurrentIndex(0)
-
 	if a.editGamePort, err = walk.NewLineEdit(parent); err != nil {
 		return err
 	}
@@ -207,7 +180,6 @@ func (a *app) buildFields(parent walk.Container, grid *walk.GridLayout) error {
 		{"房间名", a.editRoom},
 		{"房间密码（可空）", a.editPass},
 		{"玩家名", a.editName},
-		{"游戏类型", a.comboProduct},
 		{"游戏端口", a.editGamePort},
 		{"代理端口起始值", a.editProxyBase},
 	}
@@ -254,11 +226,6 @@ func (a *app) onStart() {
 		return
 	}
 
-	product := w3gs.ProductTFT
-	if a.comboProduct.CurrentIndex() == 1 {
-		product = w3gs.ProductROC
-	}
-
 	ctx, cancel := context.WithCancel(context.Background())
 	a.cancel = cancel
 	a.setRunning(true)
@@ -270,7 +237,6 @@ func (a *app) onStart() {
 			Room:       room,
 			Password:   a.editPass.Text(),
 			Name:       name,
-			Product:    product,
 			GamePort:   uint16(gamePort),
 			ProxyBase:  proxyBase,
 		})
@@ -302,7 +268,6 @@ func (a *app) setRunning(running bool) {
 	a.editRoom.SetEnabled(!running)
 	a.editPass.SetEnabled(!running)
 	a.editName.SetEnabled(!running)
-	a.comboProduct.SetEnabled(!running)
 	a.editGamePort.SetEnabled(!running)
 	a.editProxyBase.SetEnabled(!running)
 	a.btnStart.SetEnabled(!running)
