@@ -8,6 +8,9 @@ New-Item -ItemType Directory -Force -Path dist | Out-Null
 # 客户端（Windows）
 go build -o dist\w3bridge.exe .\cmd\w3bridge
 
+# 客户端图形界面版（Windows）
+go build -ldflags="-H windowsgui" -o dist\w3bridge-gui.exe .\cmd\w3bridge-gui
+
 # 服务端（Windows）
 go build -o dist\w3bridge-server.exe .\cmd\w3bridge-server
 

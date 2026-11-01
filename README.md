@@ -30,7 +30,8 @@
 
 直接使用仓库 `dist/` 目录下的预编译产物：
 
-- `w3bridge.exe` — Windows 客户端
+- `w3bridge-gui.exe` — Windows 图形界面客户端（推荐，双击即用）
+- `w3bridge.exe` — Windows 命令行客户端
 - `w3bridge-server.exe` — Windows 服务端
 - `w3bridge-server-linux-amd64` — Linux 服务端（VPS 用这个）
 
@@ -67,6 +68,16 @@ sudo ./uninstall.sh              # 卸载服务
 
 ### 2. 客户端（每人一台电脑）
 
+**图形界面版（推荐）**：双击 `w3bridge-gui.exe`，界面里已按默认参数填好：
+
+- 服务端地址：`war3.aiunit.com:51234`
+- 房间名：`666`
+- 玩家名：自动填入当前 Windows 用户名
+
+确认后点"启动"即可，日志实时显示在窗口下方。游戏类型按冰封王座/混乱之治选择。
+
+**命令行版**：
+
 ```powershell
 .\w3bridge.exe -server VPS的IP:51234 -room 666 -name 老崔
 ```
@@ -81,7 +92,7 @@ sudo ./uninstall.sh              # 卸载服务
 
 注意：魔兽选项里"局域网 TCP/IP 游戏"的端口需与客户端 `-game-port` 一致（默认 6112）。
 
-## 客户端参数
+## 命令行版参数
 
 | 参数 | 默认值 | 说明 |
 |---|---|---|
@@ -113,7 +124,8 @@ sudo ./uninstall.sh              # 卸载服务
 ## 目录结构
 
 ```
-cmd/w3bridge/          客户端入口
+cmd/w3bridge/          命令行客户端入口
+cmd/w3bridge-gui/      图形界面客户端入口
 cmd/w3bridge-server/   服务端入口
 internal/w3gs/         W3GS 协议包构造与解析（含 GBK 转码）
 internal/protocol/     客户端与服务端的帧协议
