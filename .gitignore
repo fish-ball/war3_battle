@@ -1,3 +1,8 @@
 # 系统文件
 Thumbs.db
 .DS_Store
+
+# 临时与调试文件
+*~
+*.err
+*.out
