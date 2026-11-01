@@ -20,7 +20,6 @@ import (
 const (
 	defaultServer    = "war3.aiunit.com:51234"
 	defaultRoom      = "666"
-	defaultVersion   = "27"
 	defaultGamePort  = "6112"
 	defaultProxyBase = "26112"
 )
@@ -47,7 +46,6 @@ type app struct {
 	editRoom      *walk.LineEdit
 	editPass      *walk.LineEdit
 	editName      *walk.LineEdit
-	editVersion   *walk.LineEdit
 	comboProduct  *walk.ComboBox
 	editGamePort  *walk.LineEdit
 	editProxyBase *walk.LineEdit
@@ -180,11 +178,6 @@ func (a *app) buildFields(parent walk.Container, grid *walk.GridLayout) error {
 	// 玩家名默认取当前 Windows 用户名
 	a.editName.SetText(os.Getenv("USERNAME"))
 
-	if a.editVersion, err = walk.NewLineEdit(parent); err != nil {
-		return err
-	}
-	a.editVersion.SetText(defaultVersion)
-
 	if a.comboProduct, err = walk.NewComboBox(parent); err != nil {
 		return err
 	}
@@ -214,7 +207,6 @@ func (a *app) buildFields(parent walk.Container, grid *walk.GridLayout) error {
 		{"房间名", a.editRoom},
 		{"房间密码（可空）", a.editPass},
 		{"玩家名", a.editName},
-		{"游戏版本（1.27 填 27）", a.editVersion},
 		{"游戏类型", a.comboProduct},
 		{"游戏端口", a.editGamePort},
 		{"代理端口起始值", a.editProxyBase},
@@ -251,11 +243,6 @@ func (a *app) onStart() {
 		return
 	}
 
-	version, err := strconv.ParseUint(a.editVersion.Text(), 10, 32)
-	if err != nil {
-		log.Printf("[界面] 游戏版本格式不正确: %q", a.editVersion.Text())
-		return
-	}
 	gamePort, err := strconv.ParseUint(a.editGamePort.Text(), 10, 16)
 	if err != nil {
 		log.Printf("[界面] 游戏端口格式不正确: %q", a.editGamePort.Text())
@@ -284,7 +271,6 @@ func (a *app) onStart() {
 			Password:   a.editPass.Text(),
 			Name:       name,
 			Product:    product,
-			Version:    uint32(version),
 			GamePort:   uint16(gamePort),
 			ProxyBase:  proxyBase,
 		})
@@ -316,7 +302,6 @@ func (a *app) setRunning(running bool) {
 	a.editRoom.SetEnabled(!running)
 	a.editPass.SetEnabled(!running)
 	a.editName.SetEnabled(!running)
-	a.editVersion.SetEnabled(!running)
 	a.comboProduct.SetEnabled(!running)
 	a.editGamePort.SetEnabled(!running)
 	a.editProxyBase.SetEnabled(!running)

@@ -29,7 +29,6 @@ func main() {
 		room       = flag.String("room", "666", "房间名，三人约好一致即可")
 		password   = flag.String("pass", "", "房间密码，可留空")
 		name       = flag.String("name", "", "玩家名（显示在房间里）")
-		version    = flag.Uint("ver", 27, "游戏版本号，1.27 填 27、1.26 填 26")
 		product    = flag.String("product", "tft", "游戏类型：tft（冰封王座）或 roc（混乱之治）")
 		gamePort   = flag.Uint("game-port", 6112, "魔兽局域网端口（游戏选项里的端口）")
 		proxyBase  = flag.Int("proxy-base", 26112, "本地代理端口起始值")
@@ -58,8 +57,8 @@ func main() {
 
 	log.SetFlags(log.Ltime)
 	log.Print("[客户端] 魔兽争霸3互联网联机工具启动")
-	log.Printf("[客户端] 配置：服务端 %s，房间 %s，玩家 %s，版本 1.%d，端口 %d",
-		*serverAddr, *room, *name, *version, *gamePort)
+	log.Printf("[客户端] 配置：服务端 %s，房间 %s，玩家 %s，端口 %d",
+		*serverAddr, *room, *name, *gamePort)
 	log.Print("[客户端] 提示：魔兽选项里“局域网 TCP/IP 游戏”的端口需与 -game-port 一致")
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
@@ -71,7 +70,6 @@ func main() {
 		Password:   *password,
 		Name:       *name,
 		Product:    prod,
-		Version:    uint32(*version),
 		GamePort:   uint16(*gamePort),
 		ProxyBase:  *proxyBase,
 	})

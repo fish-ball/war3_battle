@@ -28,7 +28,6 @@ type Config struct {
 	Password   string  // 房间密码
 	Name       string  // 玩家名
 	Product    [4]byte // 产品标识（W3XP / WAR3）
-	Version    uint32  // 游戏版本，1.27 对应 27
 	GamePort   uint16  // 魔兽局域网端口（游戏选项中的端口，默认 6112）
 	ProxyBase  int     // 本地代理端口起始值
 }

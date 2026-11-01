@@ -78,8 +78,8 @@ func (c *Client) addRemoteGame(ann protocol.GameAnnounce) {
 	c.remoteGames[ann.GameKey] = rg
 	c.mu.Unlock()
 
-	log.Printf("[客户端] 房间新游戏: %s (地图 %s, %d/%d 人, 主机 %s)，本地代理端口 %d",
-		info.Name, info.MapName, info.DisplayedPlayers(), info.Slots, ann.HostName, rg.proxyPort)
+	log.Printf("[客户端] 房间新游戏: %s (版本 1.%d, 地图 %s, %d/%d 人, 主机 %s)，本地代理端口 %d",
+		info.Name, info.Version, info.MapName, info.DisplayedPlayers(), info.Slots, ann.HostName, rg.proxyPort)
 
 	go c.announceLoop(rg)
 	go c.acceptLoop(rg)

@@ -35,6 +35,14 @@ var (
 	ProductROC = [4]byte{'3', 'R', 'A', 'W'}
 )
 
+// 自适配查询的版本号范围（1.15 - 1.33，覆盖经典版各版本）。
+// 局域网查询包带游戏版本号，游戏只应答与自身版本一致的查询，
+// 因此逐个版本探测即可自动适配，无需用户填写。
+const (
+	MinSearchVersion uint32 = 15
+	MaxSearchVersion uint32 = 33
+)
+
 // GameInfo 解析后的 0x30 游戏信息
 type GameInfo struct {
 	Product          [4]byte // 产品标识（线上字节序）

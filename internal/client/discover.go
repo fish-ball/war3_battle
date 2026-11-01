@@ -47,17 +47,30 @@ func (c *Client) runDiscovery(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			pkt := w3gs.BuildSearchGame(c.cfg.Product, c.cfg.Version)
+			// 全版本探测：游戏只应答与自身版本一致的查询，
+			// 逐个版本发送查询即可自动适配本机游戏版本
+			broadcast := &net.UDPAddr{IP: net.IPv4bcast, Port: int(c.cfg.GamePort)}
+			loopback := &net.UDPAddr{IP: net.IPv4(127, 0, 0, 1), Port: int(c.cfg.GamePort)}
 			// 广播查询局域网内的游戏，同时查询本机回环（游戏与工具同机时）
-			if _, err := conn.WriteToUDP(pkt, &net.UDPAddr{IP: net.IPv4bcast, Port: int(c.cfg.GamePort)}); err != nil {
+			if err := sendSearchAllVersions(conn, c.cfg.Product, broadcast); err != nil {
 				log.Printf("[客户端] 广播局域网查询失败: %v", err)
 			}
-			if _, err := conn.WriteToUDP(pkt, &net.UDPAddr{IP: net.IPv4(127, 0, 0, 1), Port: int(c.cfg.GamePort)}); err != nil {
+			if err := sendSearchAllVersions(conn, c.cfg.Product, loopback); err != nil {
 				log.Printf("[客户端] 发送本机查询失败: %v", err)
 			}
 			c.syncLocalGames()
 		}
 	}
+}
+
+// sendSearchAllVersions 向目标发送所有候选版本的查询包，返回第一个错误
+func sendSearchAllVersions(conn *net.UDPConn, product [4]byte, dst *net.UDPAddr) error {
+	for v := w3gs.MinSearchVersion; v <= w3gs.MaxSearchVersion; v++ {
+		if _, err := conn.WriteToUDP(w3gs.BuildSearchGame(product, v), dst); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // discoveryReadLoop 接收游戏的 0x30 应答
@@ -149,8 +162,8 @@ func (c *Client) syncLocalGames() {
 			continue
 		}
 		if u.isNew {
-			log.Printf("[客户端] 发现本机游戏并发布: %s (地图 %s, %d/%d 人, 主机 %s)",
-				u.info.Name, u.info.MapName, u.info.DisplayedPlayers(), u.info.Slots, u.info.HostName)
+			log.Printf("[客户端] 发现本机游戏并发布: %s (版本 1.%d, 地图 %s, %d/%d 人, 主机 %s)",
+				u.info.Name, u.info.Version, u.info.MapName, u.info.DisplayedPlayers(), u.info.Slots, u.info.HostName)
 		} else {
 			log.Printf("[客户端] 游戏信息已更新: %s (%d/%d 人)",
 				u.info.Name, u.info.DisplayedPlayers(), u.info.Slots)
