@@ -87,10 +87,16 @@ sudo ./uninstall.sh              # 卸载服务
 **PowerShell 版**（功能与 exe 版一致，共用同一服务端）：
 
 ```powershell
-powershell -File w3bridge.ps1 -Server VPS的IP:51234 -Room 666 -Name 老崔
+powershell -File w3bridge.ps1
 ```
 
-单文件脚本，无需编译环境，源码可直接查看修改，与 exe 版参数含义相同（参数名改为 PowerShell 风格：`-Server`/`-Room`/`-Name`/`-Pass`/`-GamePort`/`-ProxyBase`）。
+所有参数默认与图形界面版相同：服务端 `war3.aiunit.com:51234`、房间 `666`、玩家名自动取当前 Windows 用户名。需要修改时手动指定（参数名与 exe 版含义相同）：
+
+```powershell
+powershell -File w3bridge.ps1 -Server 1.2.3.4:51234 -Room 666 -Name 老崔 -Pass abc
+```
+
+单文件脚本，无需编译环境，源码可直接查看修改。
 
 三人约好相同的 `-room`（房间名），`-name` 随意。可选 `-pass` 设置房间密码。
 

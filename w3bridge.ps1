@@ -3,14 +3,17 @@
 #   1. 发现本局域网的游戏并发布到服务端房间；
 #   2. 把房间里的游戏广播到本机网络（改写游戏端口指向本地代理）；
 #   3. 本机游戏加入远程游戏时，经服务端中继到主机方。
-# 用法: powershell -File w3bridge.ps1 -Server 1.2.3.4:51234 -Room 666 -Name 老崔 [-Pass xxx] [-GamePort 6112] [-ProxyBase 26112]
+# 用法: powershell -File w3bridge.ps1
+#   所有参数均与图形界面版一致取默认值（服务端 war3.aiunit.com:51234、房间 666、
+#   玩家名自动取当前 Windows 用户名），需要修改时手动指定，例如:
+#   powershell -File w3bridge.ps1 -Server 1.2.3.4:51234 -Room 666 -Name 老崔
 
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)][string]$Server,
+    [string]$Server = "war3.aiunit.com:51234",
     [string]$Room = "666",
     [string]$Pass = "",
-    [Parameter(Mandatory = $true)][string]$Name,
+    [string]$Name = $env:USERNAME,
     [int]$GamePort = 6112,
     [int]$ProxyBase = 26112
 )
