@@ -33,6 +33,7 @@
 - `w3bridge-gui.exe` — Windows 图形界面客户端（推荐，双击即用）
 - `w3bridge.exe` — Windows 命令行客户端
 - `w3bridge.ps1` — PowerShell 版客户端（单文件脚本，兼容系统自带 PowerShell 5.1）
+- `w3bridge.cmd` — 双击启动器（配合 w3bridge.ps1 使用）
 - `w3bridge-linux-amd64` / `w3bridge-linux-arm64` / `w3bridge-linux-armv7` — Linux 客户端（网关模式用，见下文）
 - `w3bridge-server.exe` — Windows 服务端
 - `w3bridge-server-linux-amd64` — Linux 服务端（VPS 用这个）
@@ -85,6 +86,8 @@ sudo ./uninstall.sh              # 卸载服务
 ```
 
 **PowerShell 版**（功能与 exe 版一致，共用同一服务端）：
+
+双击 `w3bridge.cmd` 即可启动（Windows 对 `.ps1` 默认是"编辑"而非"运行"，启动器解决双击运行问题，退出后保留窗口方便看日志）。也可以右键 `w3bridge.ps1` →"使用 PowerShell 运行"，或在命令行执行：
 
 ```powershell
 powershell -File w3bridge.ps1

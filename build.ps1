@@ -31,7 +31,7 @@ $env:GOOS = "windows"
 Remove-Item Env:GOARCH -ErrorAction SilentlyContinue
 Remove-Item Env:GOARM -ErrorAction SilentlyContinue
 
-# PowerShell 版客户端直接分发脚本本体
-Copy-Item w3bridge.ps1 dist\ -Force
+# PowerShell 版客户端直接分发脚本本体与双击启动器
+Copy-Item w3bridge.ps1, w3bridge.cmd dist\ -Force
 
 Write-Host "构建完成，产物在 dist 目录"
