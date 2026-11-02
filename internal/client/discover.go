@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"time"
@@ -15,10 +16,11 @@ const discoveryInterval = 3 * time.Second
 // localGameExpire 发现结果过期时间（超过该时间未再应答则认为游戏关闭）
 const localGameExpire = 9 * time.Second
 
-// localGame 本机局域网发现的游戏
+// localGame 本局域网发现的游戏
 type localGame struct {
 	gameKey  uint32
 	info     *w3gs.GameInfo
+	addr     *net.UDPAddr // 游戏应答来源地址，建立转发流时用于连接游戏
 	lastSeen time.Time
 
 	// 已发布快照，用于检测游戏信息变化
@@ -96,12 +98,15 @@ func (c *Client) discoveryReadLoop(ctx context.Context, conn *net.UDPConn) {
 		}
 
 		c.mu.Lock()
-		g := c.localGames[addr.String()]
+		// 同一游戏可能同时从回环与广播两个地址应答，按游戏身份去重
+		key := fmt.Sprintf("%d|%s|%s", info.GameID, info.Name, info.HostName)
+		g := c.localGames[key]
 		if g == nil {
 			g = &localGame{gameKey: c.makeGameKeyLocked()}
-			c.localGames[addr.String()] = g
+			c.localGames[key] = g
 		}
 		g.info = info
+		g.addr = addr
 		g.lastSeen = time.Now()
 		c.mu.Unlock()
 	}
@@ -120,6 +125,7 @@ func (c *Client) syncLocalGames() {
 	type update struct {
 		gameKey uint32
 		info    *w3gs.GameInfo
+		addr    *net.UDPAddr
 		isNew   bool
 	}
 	var publishes []update
@@ -146,7 +152,7 @@ func (c *Client) syncLocalGames() {
 		g.sentSlots = g.info.Slots
 		g.sentName = g.info.Name
 		g.sentPort = g.info.TCPPort
-		publishes = append(publishes, update{gameKey: g.gameKey, info: g.info, isNew: isNew})
+		publishes = append(publishes, update{gameKey: g.gameKey, info: g.info, addr: g.addr, isNew: isNew})
 	}
 	c.mu.Unlock()
 
@@ -155,7 +161,7 @@ func (c *Client) syncLocalGames() {
 			log.Printf("[客户端] 游戏下架通知失败: %v", err)
 			continue
 		}
-		log.Printf("[客户端] 本机游戏已结束: %s", u.info.Name)
+		log.Printf("[客户端] 游戏已结束: %s", u.info.Name)
 	}
 
 	for _, u := range publishes {
@@ -164,8 +170,8 @@ func (c *Client) syncLocalGames() {
 			continue
 		}
 		if u.isNew {
-			log.Printf("[客户端] 发现本机游戏并发布: %s (%s 1.%d, 地图 %s, %d/%d 人, 主机 %s)",
-				u.info.Name, u.info.ProductName(), u.info.Version, u.info.MapName, u.info.DisplayedPlayers(), u.info.Slots, u.info.HostName)
+			log.Printf("[客户端] 发现游戏并发布: %s (%s 1.%d, 地图 %s, %d/%d 人, 主机 %s, 地址 %s)",
+				u.info.Name, u.info.ProductName(), u.info.Version, u.info.MapName, u.info.DisplayedPlayers(), u.info.Slots, u.info.HostName, u.addr)
 		} else {
 			log.Printf("[客户端] 游戏信息已更新: %s (%d/%d 人)",
 				u.info.Name, u.info.DisplayedPlayers(), u.info.Slots)

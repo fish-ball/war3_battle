@@ -72,9 +72,11 @@ func (c *Client) handleHostStream(open protocol.StreamOpen) {
 	}
 	var gameName string
 	var gamePort uint16
+	var gameIP net.IP
 	if target != nil {
 		gameName = target.info.Name
 		gamePort = target.info.TCPPort
+		gameIP = target.addr.IP
 	}
 	c.mu.Unlock()
 
@@ -85,10 +87,11 @@ func (c *Client) handleHostStream(open protocol.StreamOpen) {
 		return
 	}
 
-	addr := &net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: int(gamePort)}
+	// 回连发现游戏时的来源地址：与游戏同机时是回环地址，网关模式下是游戏机的局域网地址
+	addr := &net.TCPAddr{IP: gameIP, Port: int(gamePort)}
 	local, err := net.DialTCP("tcp", nil, addr)
 	if err != nil {
-		log.Printf("[客户端] 连接本机游戏 %s 失败: %v", addr, err)
+		log.Printf("[客户端] 连接游戏 %s 失败: %v", addr, err)
 		c.conn.WriteJSON(protocol.FrameStreamResult, protocol.StreamResult{
 			GlobalID: open.GlobalID, OK: false, Error: "连接本机游戏失败: " + err.Error(),
 		})
@@ -107,7 +110,7 @@ func (c *Client) handleHostStream(open protocol.StreamOpen) {
 	c.streams[open.GlobalID] = st
 	c.mu.Unlock()
 
-	log.Printf("[客户端] 有人加入本机游戏: %s (流 %d)", gameName, open.GlobalID)
+	log.Printf("[客户端] 有人加入游戏: %s (流 %d)", gameName, open.GlobalID)
 	go c.pumpLocalToServer(st)
 }
 
