@@ -32,6 +32,7 @@
 
 - `w3bridge-gui.exe` — Windows 图形界面客户端（推荐，双击即用）
 - `w3bridge.exe` — Windows 命令行客户端
+- `w3bridge.ps1` — PowerShell 版客户端（单文件脚本，兼容系统自带 PowerShell 5.1）
 - `w3bridge-linux-amd64` / `w3bridge-linux-arm64` / `w3bridge-linux-armv7` — Linux 客户端（网关模式用，见下文）
 - `w3bridge-server.exe` — Windows 服务端
 - `w3bridge-server-linux-amd64` — Linux 服务端（VPS 用这个）
@@ -82,6 +83,14 @@ sudo ./uninstall.sh              # 卸载服务
 ```powershell
 .\w3bridge.exe -server VPS的IP:51234 -room 666 -name 老崔
 ```
+
+**PowerShell 版**（功能与 exe 版一致，共用同一服务端）：
+
+```powershell
+powershell -File w3bridge.ps1 -Server VPS的IP:51234 -Room 666 -Name 老崔
+```
+
+单文件脚本，无需编译环境，源码可直接查看修改，与 exe 版参数含义相同（参数名改为 PowerShell 风格：`-Server`/`-Room`/`-Name`/`-Pass`/`-GamePort`/`-ProxyBase`）。
 
 三人约好相同的 `-room`（房间名），`-name` 随意。可选 `-pass` 设置房间密码。
 
